@@ -81,7 +81,13 @@ ExplorerTab(hwnd) {
     ; 支持的文件扩展名
     allowedExt := Map(
         ".mp4", true, ".mkv", true, ".avi", true, ".mov", true, ".flv", true,
-        ".jpg", true, ".jpeg", true, ".png", true, ".bmp", true, ".gif", true, ".webp", true
+        ".jpg", true, ".jpeg", true, ".png", true, ".bmp", true, ".gif", true,
+        ".webp", true, ".mov", true, ".mp3", true, ".wav", true, ".flac", true, ".ogg", true,
+        ".MOV", true, ".MP4", true, ".MKV", true, ".AVI", true, ".FLV", true,
+        ".JPG", true, ".JPEG", true, ".PNG", true, ".BMP", true, ".GIF", true,
+        ".WEBP", true, ".MP3", true, ".WAV", true, ".FLAC", true, ".OGG", true,
+        ".M4V", true, ".WMV", true, ".3GP", true, ".TS", true, ".RMVB", true,
+        ".m4v", true, ".wmv", true, ".3gp", true, ".ts", true, ".rmvb", true,
     )
 
     count := 0
