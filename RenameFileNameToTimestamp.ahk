@@ -72,7 +72,7 @@ ExplorerTab(hwnd) {
 ^!F2::
 {
     filePaths := ExplorerSelectedItems()
-  
+
     if (!IsSet(filePaths) || filePaths.Length = 0) {
         MsgBox("请先选择一个或多个文件或文件夹。", "未选择项目", "0x30")
         return
@@ -121,7 +121,7 @@ ExplorerTab(hwnd) {
                 ext := ""
             } else {
                 base := RegExReplace(newName, "(?:\.\w+)?$")
-                ext := RegExMatch(newName, "\.\w+$") ? SubStr(newName, InStr(newName, ".", -1)) : ""
+                ext := RegExMatch(newName, "\.\w+$") ? SubStr(newName, InStr(newName, ".", StrLen(newName))) : ""
             }
 
             i := 2
