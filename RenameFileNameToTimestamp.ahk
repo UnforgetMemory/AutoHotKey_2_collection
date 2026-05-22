@@ -7,6 +7,27 @@ GroupAdd("ExplorerDesktopGroup", "ahk_class CabinetWClass")
 GroupAdd("ExplorerDesktopGroup", "ahk_class Progman")
 GroupAdd("ExplorerDesktopGroup", "ahk_class WorkerW")
 
+; 获取允许处理的文件扩展名列表（静态初始化，仅构建一次）
+GetAllowedExt() {
+    static ext := Map(
+        ; 视频
+        ".mp4", true, ".mkv", true, ".avi", true, ".mov", true, ".flv", true,
+        ".wmv", true, ".rmvb", true, ".3gp", true, ".ts", true, ".m4v", true,
+        ".mpg", true, ".mpeg", true, ".vob", true, ".f4v", true, ".mts", true,
+        ".m2ts", true, ".divx", true, ".hevc", true, ".h265", true,
+        ; 图片
+        ".jpg", true, ".jpeg", true, ".png", true, ".bmp", true, ".gif", true,
+        ".webp", true,
+        ; 音频
+        ".mp3", true, ".wav", true, ".flac", true, ".ogg", true, ".aac", true,
+        ".m4a", true,
+        ; 压缩包
+        ".zip", true, ".rar", true, ".7z", true, ".tar", true,
+        ".gz", true, ".bz2", true, ".xz", true, ".zst", true
+    )
+    return ext
+}
+
 #HotIf WinActive("ahk_group ExplorerDesktopGroup")
 
 ExplorerSelectedItem(activewindow := True) {
@@ -124,16 +145,8 @@ ExplorerActiveTabWindow(hwnd) {
         return
     }
 
-    ; 支持的文件扩展名（统一小写）
-    allowedExt := Map()
-    for ext in [
-        ".mp4", ".mkv", ".avi", ".mov", ".flv", ".wmv", ".rmvb", ".3gp", ".ts", ".m4v",
-        ".mpg", ".mpeg", ".vob", ".f4v", ".mts", ".m2ts", ".divx", ".hevc", ".h265",
-        ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".webp",
-        ".mp3", ".wav", ".flac", ".ogg", ".aac", ".m4a"
-    ] {
-        allowedExt[ext] := true
-    }
+    ; 获取允许的文件扩展名列表（静态初始化 Map，仅首次调用时构建）
+    allowedExt := GetAllowedExt()
 
     count := 0
     for item in filePaths {
@@ -160,17 +173,21 @@ ExplorerActiveTabWindow(hwnd) {
         newName := utcNow . "_" . count . (ext ? "." . ext : "")
         newPath := dir . "\" . newName
 
-        ; 唯一化
-        if (FileExist(newPath) || (isFolder && DirExist(newPath))) {
-            base := isFolder ? newName : RegExReplace(newName, "(?:\.\w+)?$")
-            ext := isFolder ? "" : (RegExMatch(newName, "\.\w+$") ? SubStr(newName, InStr(newName, ".", StrLen(newName))) :
-                "")
+        ; 若文件已是目标文件名（newPath == path），跳过避免自我重命名冲突
+        if (newPath = path)
+            continue
+
+        ; 唯一化：若目标名已存在，追加递增后缀 (2), (3)...
+        if (FileExist(newPath) || DirExist(newPath)) {
+            SplitPath newName, , , &OutExt, &OutNameNoExt
             i := 2
-            while (FileExist(dir . "\" . base . " (" . i . ")" . ext) || (isFolder && DirExist(dir . "\" . base . " (" .
-                i . ")" . ext))) {
+            Loop {
+                suffix := OutExt = "" ? "" : "." . OutExt
+                newPath := dir . "\" . OutNameNoExt . " (" . i . ")" . suffix
+                if !FileExist(newPath) && !DirExist(newPath)
+                    break
                 i++
             }
-            newPath := dir . "\" . base . " (" . i . ")" . ext
         }
 
         try {
@@ -186,6 +203,5 @@ ExplorerActiveTabWindow(hwnd) {
     ; 刷新资源管理器
     DllCall("Shell32.dll\SHChangeNotify", "UInt", 0x00002000, "UInt", 0x0000, "UInt", 0, "UInt", 0)
 }
-return
 
 #HotIf
