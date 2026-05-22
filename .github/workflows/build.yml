@@ -1,0 +1,33 @@
+name: Build AHK
+
+on:
+  push:
+    paths: ['*.ahk']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        script:
+          - in: RenameFileNameToTimestamp.ahk
+            out: RenameFileNameToTimestamp.exe
+          - in: AudioMediaController.ahk
+            out: AudioMediaController.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: benmusson/ahk2exe-action@v1
+        with:
+          ahk: v2
+          in: ${{ matrix.script.in }}
+          out: ${{ matrix.script.out }}
+          x64: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.script.out }}
+          path: ${{ matrix.script.out }}
