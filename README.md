@@ -4,6 +4,18 @@ AutoHotkey v2 脚本合集，用于提升 Windows 日常操作效率。
 
 ## 脚本列表
 
+### 🔊 AudioMediaController.ahk
+
+全局媒体控制快捷键，适用于主流播放器（浏览器、PotPlayer、Spotify、网易云音乐等）。
+
+| 快捷键 | 功能 |
+|--------|------|
+| `Ctrl + Alt + Space` | 播放 / 暂停（若无播放则开启播放） |
+| `Ctrl + Alt + ←` | 上一曲 |
+| `Ctrl + Alt + →` | 下一曲 |
+| `Ctrl + Alt + ↑` | 音量增加 |
+| `Ctrl + Alt + ↓` | 音量减小 |
+
 ### 📁 RenameFileNameToTimestamp.ahk
 
 资源管理器文件批量重命名工具。选中文件后按 `Ctrl+Alt+F2`，自动将文件名替换为当前时间戳。
